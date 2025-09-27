@@ -47,7 +47,11 @@
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Verify planned delivery can be sliced into independent, test-first milestones (Strategic Incrementalism).
+- Challenge unnecessary complexity or dependencies; document any required exceptions (Radical Simplicity).
+- Cite authoritative best-practice references for Keycloak and container operations (Best-Practice Discipline).
+- Ensure documentation and onboarding impacts are addressed so contributors can follow along (Open Contribution).
+- Confirm containerized workflows (Docker/Podman) remain the primary execution path (Container-First Delivery).
 
 ## Project Structure
 
@@ -216,4 +220,4 @@ directories captured above]
 - [ ] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+*Based on Constitution v1.0.0 - See `/memory/constitution.md`*
