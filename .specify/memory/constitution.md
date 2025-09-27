@@ -1,50 +1,72 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version: n/a → 1.0.0
+- Modified Principles:
+  * [PRINCIPLE_1_NAME] → Strategic Incrementalism
+  * [PRINCIPLE_2_NAME] → Radical Simplicity
+  * [PRINCIPLE_3_NAME] → Best-Practice Discipline
+  * [PRINCIPLE_4_NAME] → Open Contribution
+  * [PRINCIPLE_5_NAME] → Container-First Delivery
+- Added Sections:
+  * Execution Standards
+  * Workflow Expectations
+- Removed Sections: None
+- Templates Requiring Updates:
+  * .specify/templates/plan-template.md ✅
+  * .specify/templates/spec-template.md ✅ (no changes needed)
+  * .specify/templates/tasks-template.md ✅ (no changes needed)
+- Follow-up TODOs: None
+-->
+# Keycloak Custom Docker Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Strategic Incrementalism
+Plan ambitiously but deliver in small, reviewable slices. Every change MUST ship behind a
+failing-to-passing test cycle and include a rollback strategy. Large initiatives are to be
+split into milestones that can land independently without blocking contributors.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Radical Simplicity
+Prefer the simplest approach that satisfies requirements. Reject unnecessary abstractions,
+third-party dependencies, or configuration unless justified in the plan. Complexity MUST be
+documented with clear rationale and an exit strategy.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Best-Practice Discipline
+Align implementation with well-documented industry and upstream Keycloak best practices.
+Reference official docs or community standards when making architectural decisions. Deviations
+MUST be explained in design docs and validated with automated tests.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Open Contribution
+Optimize the repository for new contributors: keep documentation current, automate setup, and
+maintain clear task breakdowns. Reviewers MUST flag unclear instructions or opaque code paths
+so they can be improved before merge.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Container-First Delivery
+Docker or Podman images are the primary delivery vehicle. All tooling, testing, and deployment
+workflows MUST function via containers by default. Non-container paths are optional and must
+not break the containerized experience.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Execution Standards
+- Maintain a reproducible container build (Dockerfile/Containerfile) with automated image
+  verification tests.
+- Ensure CI pipelines validate container builds, smoke tests, and linting before release.
+- Capture key operational knowledge (environment variables, volumes, networking) in the README
+  and quickstart docs.
+- Treat security patches and upstream Keycloak updates as priority maintenance tasks.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Workflow Expectations
+- Begin each feature with research and planning documents that cite relevant best practices.
+- Keep tasks scoped to achieve test-first progress within a day of effort.
+- Require pair review or asynchronous walkthroughs for non-trivial changes to uphold simplicity
+  and contributor clarity.
+- Update onboarding or contributor docs whenever processes change.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+- This constitution supersedes conflicting guidance. Amendments require consensus in review and
+  MUST include version bumps, rationale, and template sync confirmation.
+- Compliance is verified during plan reviews and pull-request checks. Violations block merge
+  until resolved or formally waived with documented mitigation.
+- Versioning follows MAJOR.MINOR.PATCH semantics based on scope of change. Ratification and
+  amendment dates are recorded per update.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
-
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-09-27 | **Last Amended**: 2025-09-27
