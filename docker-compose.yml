@@ -1,0 +1,17 @@
+services:
+  keycloak:
+    build: .
+    container_name: green-sky-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_SPI_THEME_DEFAULT: green-sky-login
+      KC_SPI_THEME_WELCOME_THEME: green-sky-login
+    command:
+      - start-dev
+      - --http-enabled=true
+      - --spi-theme-default=green-sky-login
+    ports:
+      - "8080:8080"
