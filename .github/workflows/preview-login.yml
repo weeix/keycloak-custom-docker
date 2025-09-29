@@ -76,7 +76,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const core = require('@actions/core');
 
             const screenshotPath = 'tests/playwright/artifacts/green-sky-login.png';
             if (!fs.existsSync(screenshotPath)) {
