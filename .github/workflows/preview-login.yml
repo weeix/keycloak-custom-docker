@@ -46,13 +46,33 @@ jobs:
         working-directory: tests/playwright
         run: npm test
 
+      - name: Gather login screenshot
+        if: always()
+        run: |
+          mkdir -p tests/playwright/artifacts
+          SCREENSHOT=$(find tests/playwright/test-results -name green-sky-login.png -print -quit)
+          if [ -n "$SCREENSHOT" ] && [ -f "$SCREENSHOT" ]; then
+            cp "$SCREENSHOT" tests/playwright/artifacts/green-sky-login.png
+          else
+            echo "Login screenshot not found" >&2
+          fi
+
+      - name: Publish login screenshot summary
+        if: always()
+        run: |
+          if [ -f tests/playwright/artifacts/green-sky-login.png ]; then
+            echo '## Login preview' >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "![Green Sky login](data:image/png;base64,$(base64 -w0 tests/playwright/artifacts/green-sky-login.png))" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Login screenshot was not generated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload Playwright artifacts
         uses: actions/upload-artifact@v4
         with:
           name: login-page-preview
-          path: |
-            tests/playwright/test-results/**/*
-            tests/playwright/playwright-report
+          path: tests/playwright/artifacts/green-sky-login.png
           if-no-files-found: error
 
       - name: Teardown environment
