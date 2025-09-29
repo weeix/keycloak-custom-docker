@@ -13,7 +13,7 @@ test('log in to admin console and capture themed login page', async ({ page }, t
   await page.goto('/admin/');
 
   await page.getByLabel(/username or email/i).fill(ADMIN_USERNAME);
-  await page.getByLabel(/password/i).fill(ADMIN_PASSWORD);
+  await page.locator('input[name="password"]').fill(ADMIN_PASSWORD);
   await page.getByRole('button', { name: /sign in/i }).click();
 
   await page.waitForURL('**/admin/master/console/**', { timeout: 30_000 });
