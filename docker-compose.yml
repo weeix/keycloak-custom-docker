@@ -7,7 +7,9 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     volumes:
       - ./theme/green-sky-login:/opt/keycloak/themes/green-sky-login
+      - ./realm:/opt/keycloak/data/import
     command:
       - start-dev
+      - --import-realm
     ports:
       - "8080:8080"

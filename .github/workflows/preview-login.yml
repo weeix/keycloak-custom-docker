@@ -1,0 +1,60 @@
+name: Preview themed login
+
+on:
+  pull_request:
+
+jobs:
+  preview:
+    name: Build & capture login preview
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright dependencies
+        working-directory: tests/playwright
+        run: npm install
+
+      - name: Install Playwright browser
+        working-directory: tests/playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Start Keycloak
+        run: docker compose up -d keycloak
+
+      - name: Wait for Keycloak to be ready
+        run: |
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:8080/realms/master/.well-known/openid-configuration > /dev/null; then
+              exit 0
+            fi
+            echo "Keycloak is not ready yet (attempt ${attempt}). Waiting..."
+            sleep 5
+          done
+          echo "Keycloak did not become ready in time" >&2
+          docker compose logs keycloak
+          exit 1
+
+      - name: Run Playwright tests
+        working-directory: tests/playwright
+        run: npm test
+
+      - name: Upload Playwright artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: login-page-preview
+          path: |
+            tests/playwright/test-results/**/*
+            tests/playwright/playwright-report
+          if-no-files-found: error
+
+      - name: Teardown environment
+        if: always()
+        run: docker compose down -v

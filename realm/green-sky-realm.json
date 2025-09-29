@@ -1,0 +1,75 @@
+{
+  "id": "green-sky",
+  "realm": "green-sky",
+  "displayName": "Green Sky",
+  "enabled": true,
+  "loginTheme": "green-sky-login",
+  "registrationAllowed": false,
+  "rememberMe": true,
+  "resetPasswordAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "internationalizationEnabled": false,
+  "clients": [
+    {
+      "clientId": "login-app",
+      "name": "Login preview",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "redirectUris": [
+        "http://localhost:8080/*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "rootUrl": "http://localhost:8080",
+      "adminUrl": "http://localhost:8080",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "defaultClientScopes": [
+        "web-origins",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "defaultDefaultClientScopes": [
+    "web-origins",
+    "roles",
+    "profile",
+    "email"
+  ],
+  "defaultOptionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ],
+  "users": [
+    {
+      "username": "theme-viewer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Theme",
+      "lastName": "Viewer",
+      "email": "theme.viewer@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}
