@@ -110,11 +110,10 @@ jobs:
 
             const file = await fs.promises.readFile(screenshotPath);
             const upload = await github.request(
-              'POST /repos/{owner}/{repo}/issues/{issue_number}/comments/{comment_id}/attachments',
+              'POST /repos/{owner}/{repo}/issues/comments/{comment_id}/attachments',
               {
                 owner,
                 repo,
-                issue_number,
                 comment_id: targetComment.id,
                 name: 'green-sky-login.png',
                 file: file.toString('base64'),
