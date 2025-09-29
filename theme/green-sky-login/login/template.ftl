@@ -135,53 +135,63 @@
 <body id="keycloak-bg" class="${properties.kcBodyClass!}" data-page-id="login-${pageId}">
 <div class="${properties.kcLogin!}">
   <div class="${properties.kcLoginContainer!}">
-    <header id="kc-header" class="pf-v5-c-login__header">
-      <div id="kc-header-wrapper"
-              class="pf-v5-c-brand">Custom Theme</div>
-    </header>
     <main class="${properties.kcLoginMain!}">
-      <div class="${properties.kcLoginMainHeader!}">
-        <h1 class="${properties.kcLoginMainTitle!}" id="kc-page-title"><#nested "header"></h1>
-        <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
-        <div class="${properties.kcLoginMainHeaderUtilities!}">
-          <div class="${properties.kcInputClass!}">
-            <select
-              aria-label="${msg("languages")}"
-              id="login-select-toggle"
-              onchange="if (this.value) window.location.href=this.value"
-            >
-              <#list locale.supported?sort_by("label") as l>
-                <option
-                  value="${l.url}"
-                  ${(l.languageTag == locale.currentLanguageTag)?then('selected','')}
-                >
-                  ${l.label}
-                </option>
-              </#list>
-            </select>
-            <span class="${properties.kcFormControlUtilClass}">
-              <span class="${properties.kcFormControlToggleIcon!}">
-                <svg
-                  class="pf-v5-svg"
-                  viewBox="0 0 320 512"
-                  fill="currentColor"
-                  aria-hidden="true"
-                  role="img"
-                  width="1em"
-                  height="1em"
-                >
-                  <path
-                    d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                  >
-                  </path>
-                </svg>
-              </span>
-            </span>
+      <div class="login-grid">
+        <section class="login-hero">
+          <header id="kc-header" class="pf-v5-c-login__header">
+            <div id="kc-header-wrapper" class="pf-v5-c-brand">Green Sky</div>
+          </header>
+          <div class="login-hero-content">
+            <h1 class="login-hero-title">Welcome to your workspace</h1>
+            <p class="login-hero-text">
+              Streamline your access with a calm, sky-inspired sign in. Enter your credentials to continue.
+            </p>
           </div>
-        </div>
-        </#if>
-      </div>
-      <div class="${properties.kcLoginMainBody!}">
+        </section>
+        <section class="login-card">
+          <div class="login-card-inner">
+            <div class="${properties.kcLoginMainHeader!}">
+              <h1 class="${properties.kcLoginMainTitle!}" id="kc-page-title"><#nested "header"></h1>
+              <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
+              <div class="${properties.kcLoginMainHeaderUtilities!}">
+                <div class="${properties.kcInputClass!}">
+                  <select
+                    aria-label="${msg("languages")}"
+                    id="login-select-toggle"
+                    onchange="if (this.value) window.location.href=this.value"
+                  >
+                    <#list locale.supported?sort_by("label") as l>
+                      <option
+                        value="${l.url}"
+                        ${(l.languageTag == locale.currentLanguageTag)?then('selected','')}
+                      >
+                        ${l.label}
+                      </option>
+                    </#list>
+                  </select>
+                  <span class="${properties.kcFormControlUtilClass}">
+                    <span class="${properties.kcFormControlToggleIcon!}">
+                      <svg
+                        class="pf-v5-svg"
+                        viewBox="0 0 320 512"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        role="img"
+                        width="1em"
+                        height="1em"
+                      >
+                        <path
+                          d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+                        >
+                        </path>
+                      </svg>
+                    </span>
+                  </span>
+                </div>
+              </div>
+              </#if>
+            </div>
+            <div class="${properties.kcLoginMainBody!}">
         <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
             <#if displayRequiredFields>
                 <div class="${properties.kcContentWrapperClass!}">
@@ -250,11 +260,13 @@
                   </div>
               </#if>
           </div>
+            </div>
+            <div class="login-card-footer ${properties.kcLoginMainFooter!}">
+                <@loginFooter.content/>
+            </div>
+          </div>
+        </section>
       </div>
-
-        <div class="${properties.kcLoginMainFooter!}">
-            <@loginFooter.content/>
-        </div>
     </main>
   </div>
 </div>
