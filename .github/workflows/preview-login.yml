@@ -1,0 +1,99 @@
+name: Preview themed login
+
+on:
+  pull_request:
+
+jobs:
+  preview:
+    name: Build & capture login preview
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: tests/playwright/package-lock.json
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('tests/playwright/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright dependencies
+        working-directory: tests/playwright
+        run: npm ci
+
+      - name: Install Playwright browser
+        working-directory: tests/playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Start Keycloak
+        run: docker compose up -d keycloak
+
+      - name: Wait for Keycloak to be ready
+        run: |
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:8080/realms/master/.well-known/openid-configuration > /dev/null; then
+              exit 0
+            fi
+            echo "Keycloak is not ready yet (attempt ${attempt}). Waiting..."
+            sleep 5
+          done
+          echo "Keycloak did not become ready in time" >&2
+          docker compose logs keycloak
+          exit 1
+
+      - name: Run Playwright tests
+        working-directory: tests/playwright
+        run: npm test
+
+      - name: Gather login screenshot
+        if: always()
+        run: |
+          mkdir -p tests/playwright/artifacts
+          SCREENSHOT=$(find tests/playwright/test-results -name green-sky-login.png -print -quit)
+          if [ -n "$SCREENSHOT" ] && [ -f "$SCREENSHOT" ]; then
+            cp "$SCREENSHOT" tests/playwright/artifacts/green-sky-login.png
+          else
+            echo "Login screenshot not found" >&2
+          fi
+
+      - name: Publish login screenshot summary
+        if: always()
+        run: |
+          if [ -f tests/playwright/artifacts/green-sky-login.png ]; then
+            echo '## Login preview' >> "$GITHUB_STEP_SUMMARY"
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo 'Screenshot posted to Discord via webhook.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Login screenshot was not generated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Send login screenshot to Discord
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ ! -f tests/playwright/artifacts/green-sky-login.png ]; then
+            echo "Login screenshot not found; skipping Discord upload." >&2
+            exit 0
+          fi
+
+          curl --fail-with-body -sS \
+            -F "file=@tests/playwright/artifacts/green-sky-login.png" \
+            -F "payload_json={\"content\":\"Green Sky login preview for PR #${{ github.event.number }}: https://github.com/${{ github.repository }}/pull/${{ github.event.number }}\"}" \
+            "$DISCORD_WEBHOOK_URL"
+
+      - name: Teardown environment
+        if: always()
+        run: docker compose down -v
