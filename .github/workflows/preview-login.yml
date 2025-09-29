@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -62,18 +63,73 @@ jobs:
         run: |
           if [ -f tests/playwright/artifacts/green-sky-login.png ]; then
             echo '## Login preview' >> "$GITHUB_STEP_SUMMARY"
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "![Green Sky login](data:image/png;base64,$(base64 -w0 tests/playwright/artifacts/green-sky-login.png))" >> "$GITHUB_STEP_SUMMARY"
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo 'Screenshot posted as a PR comment attachment.' >> "$GITHUB_STEP_SUMMARY"
           else
             echo 'Login screenshot was not generated.' >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Upload Playwright artifacts
-        uses: actions/upload-artifact@v4
+      - name: Post login screenshot comment
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
         with:
-          name: login-page-preview
-          path: tests/playwright/artifacts/green-sky-login.png
-          if-no-files-found: error
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const core = require('@actions/core');
+
+            const screenshotPath = 'tests/playwright/artifacts/green-sky-login.png';
+            if (!fs.existsSync(screenshotPath)) {
+              core.warning('Login screenshot not found; skipping PR comment update.');
+              return;
+            }
+
+            const marker = '<!-- green-sky-login-preview -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            let targetComment = comments.find(
+              (comment) => comment.user?.type === 'Bot' && comment.body?.includes(marker)
+            );
+
+            if (!targetComment) {
+              const { data } = await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body: `${marker}\nPreparing login screenshot…`,
+              });
+              targetComment = data;
+            }
+
+            const file = await fs.promises.readFile(screenshotPath);
+            const upload = await github.request(
+              'POST /repos/{owner}/{repo}/issues/{issue_number}/comments/{comment_id}/attachments',
+              {
+                owner,
+                repo,
+                issue_number,
+                comment_id: targetComment.id,
+                name: 'green-sky-login.png',
+                file: file.toString('base64'),
+              }
+            );
+
+            const assetUrl = upload.data.attachment.url;
+
+            await github.rest.issues.updateComment({
+              owner,
+              repo,
+              comment_id: targetComment.id,
+              body: `${marker}\n![Green Sky login](${assetUrl})`,
+            });
 
       - name: Teardown environment
         if: always()
